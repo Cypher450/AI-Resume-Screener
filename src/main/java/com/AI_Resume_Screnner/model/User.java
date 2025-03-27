@@ -8,7 +8,8 @@ import java.time.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
 	@Id
@@ -21,7 +22,6 @@ public abstract class User {
 	@Column(nullable = false, unique = true)
 	private String mail;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private String password;
 	
