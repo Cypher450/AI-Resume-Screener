@@ -7,6 +7,7 @@ import com.AI_Resume_Screnner.model.User;
 import com.AI_Resume_Screnner.repository.AdminRepository;
 import com.AI_Resume_Screnner.repository.CandidateRepository;
 import com.AI_Resume_Screnner.repository.RecruiterRepository;
+import com.AI_Resume_Screnner.repository.UserRepository;
 import com.AI_Resume_Screnner.security.CustomUserDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private RecruiterRepository recruiterRepository;
+    
+    @Autowired
+    UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<? extends User> user = findUserByEmail(email);
+        User user = userRepository.findByMail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return user.map(CustomUserDetails::new)
-                   .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        System.out.println("Raw Password (User Input): " + email);
+        System.out.println("Stored Hashed Password: " + user.getPassword());
+
+        return new CustomUserDetails(user);
     }
 
     private Optional<? extends User> findUserByEmail(String email) {
